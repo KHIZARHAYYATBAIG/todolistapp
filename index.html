@@ -56,6 +56,55 @@
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
+    
+    /* Progress Bar Styling */
+    .progress-container {
+      margin-bottom: 20px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .dark .progress-container {
+      background: rgba(44, 44, 44, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+    
+    .dark .progress-bar {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      border-radius: 20px;
+      width: 0%;
+      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    }
+    
+    .dark .progress-fill {
+      background: linear-gradient(90deg, #a8edea, #fed6e3);
+    }
     .input-area {
       display: flex;
       gap: 5px;
@@ -366,7 +415,7 @@
     /* Mobile responsiveness */
     @media (max-width: 480px) {
       body {
-        align-items: center;
+        align-items: flex-start;
         padding: 5px;
       }
       
@@ -401,7 +450,8 @@
       }
       
       .task-left {
-       
+        flex-direction: column;
+        align-items: flex-start;
         gap: 5px;
         width: 100%;
       }
@@ -516,7 +566,7 @@
     /* Landscape orientation for mobile */
     @media (max-width: 768px) and (orientation: landscape) {
       body {
-        align-items: center;
+        align-items: flex-start;
         padding: 10px;
       }
       
@@ -538,6 +588,17 @@
   <div class="container">
     <button id="darkToggle">🌙 Dark Mode</button>
     <h2>Todo List</h2>
+    
+    <!-- Progress Bar -->
+    <div class="progress-container">
+      <div class="progress-info">
+        <span id="progressText">0 of 0 tasks completed</span>
+        <span id="progressPercent">0%</span>
+      </div>
+      <div class="progress-bar">
+        <div id="progressFill" class="progress-fill"></div>
+      </div>
+    </div>
         <div class="search-filter-area">
       <input id="searchInput" placeholder="🔍 Search tasks...">
       <div class="filter-buttons">
@@ -575,6 +636,11 @@
     const allBtn = document.getElementById("allBtn");
     const completedBtn = document.getElementById("completedBtn");
     const pendingBtn = document.getElementById("pendingBtn");
+    
+    // Progress bar elements
+    const progressText = document.getElementById("progressText");
+    const progressPercent = document.getElementById("progressPercent");
+    const progressFill = document.getElementById("progressFill");
 
     // Load data from localStorage
     let isDarkMode = localStorage.getItem("darkMode") === "true";
@@ -714,6 +780,19 @@
 
         taskList.appendChild(li);
       });
+      
+      // Update progress bar
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const totalTasks = tasks.length;
+      const completedTasks = tasks.filter(task => task.done).length;
+      const percentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+      
+      progressText.textContent = `${completedTasks} of ${totalTasks} tasks completed`;
+      progressPercent.textContent = `${percentage}%`;
+      progressFill.style.width = `${percentage}%`;
     }
 
     function addTask() {
